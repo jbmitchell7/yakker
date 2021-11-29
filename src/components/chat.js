@@ -1,23 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-
 
 export default class Chat extends React.Component {
     render() {
-        let { username } = this.props.route.params;
+        let { username, color } = this.props.route.params;
         this.props.navigation.setOptions({ title: username })
         return (
-            <View style={styles.container}>
-                <Text>See Chats Here!</Text>
+            <View style={{ flex: 1, backgroundColor: color ? color : 'black' }}>
+                <Text style={{ color: 'yellow' }}>See Chats Here!</Text>
             </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
 });
