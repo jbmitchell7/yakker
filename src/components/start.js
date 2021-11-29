@@ -17,15 +17,33 @@ export default class Start extends React.Component {
                     value={this.state.username}
                     placeholder='Enter Name Here'
                 />
-                <View>
+                <View style={styles.colorChooser}>
                     <TouchableOpacity
                         accessible={true}
-                        accessibilityLabel="choose green background"
+                        accessibilityLabel="choose teal background"
                         accessibilityHint="choose chat screen background"
                         accessibilityRole="button"
                         onPress={() => { }}
                     >
                         <View style={styles.color1}></View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        accessible={true}
+                        accessibilityLabel="choose gray background"
+                        accessibilityHint="choose chat screen background"
+                        accessibilityRole="button"
+                        onPress={() => { }}
+                    >
+                        <View style={styles.color2}></View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        accessible={true}
+                        accessibilityLabel="choose white background"
+                        accessibilityHint="choose chat screen background"
+                        accessibilityRole="button"
+                        onPress={() => { }}
+                    >
+                        <View style={styles.color3}></View>
                     </TouchableOpacity>
                 </View>
                 <Button
@@ -60,10 +78,26 @@ const styles = StyleSheet.create({
         backgroundColor: '#FECB7A',
         borderRadius: 5
     },
+    colorChooser: {
+        marginBottom: 10,
+        backgroundColor: 'white'
+    },
     color1: {
         width: 40,
         height: 40,
         borderRadius: 40,
-        backgroundColor: 'green'
-    }
+        backgroundColor: '#0DD5B2'
+    },
+    color2: {
+        width: 40,
+        height: 40,
+        borderRadius: 40,
+        backgroundColor: '#41464D'
+    },
+    color3: {
+        width: 40,
+        height: 40,
+        borderRadius: 40,
+        backgroundColor: 'white'
+    },
 });
