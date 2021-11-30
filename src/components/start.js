@@ -6,9 +6,11 @@ import bgImage from '../assets/mountain.jpg';
 
 //initializes colors for chat background choices
 const colors = {
-    grey: '#41464D',
-    white: 'white',
-    teal: '#0DD5B2'
+    grey: '#363732',
+    tan: '#FECB7A',
+    teal: '#0DD5B2',
+    brown: '#B5742A',
+    blue: '#5171A5',
 }
 
 export default class Start extends React.Component {
@@ -57,12 +59,30 @@ export default class Start extends React.Component {
                         </TouchableOpacity>
                         <TouchableOpacity
                             accessible={true}
-                            accessibilityLabel="choose white background"
+                            accessibilityLabel="choose tan background"
                             accessibilityHint="choose chat screen background"
                             accessibilityRole="button"
-                            onPress={() => this.setState({ color: colors.white })}
+                            onPress={() => this.setState({ color: colors.tan })}
                         >
                             <View style={[styles.colorChoice, styles.color3]}></View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            accessible={true}
+                            accessibilityLabel="choose brown background"
+                            accessibilityHint="choose chat screen background"
+                            accessibilityRole="button"
+                            onPress={() => this.setState({ color: colors.brown })}
+                        >
+                            <View style={[styles.colorChoice, styles.color4]}></View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            accessible={true}
+                            accessibilityLabel="choose blue background"
+                            accessibilityHint="choose chat screen background"
+                            accessibilityRole="button"
+                            onPress={() => this.setState({ color: colors.blue })}
+                        >
+                            <View style={[styles.colorChoice, styles.color5]}></View>
                         </TouchableOpacity>
                     </View>
                     <Button
@@ -129,6 +149,12 @@ const styles = StyleSheet.create({
         backgroundColor: colors.grey
     },
     color3: {
-        backgroundColor: colors.white
+        backgroundColor: colors.tan
+    },
+    color4: {
+        backgroundColor: colors.brown
+    },
+    color5: {
+        backgroundColor: colors.blue
     },
 });
