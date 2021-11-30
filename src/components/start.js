@@ -2,7 +2,13 @@ import React from 'react';
 import { StyleSheet, View, Text, TextInput, Button, ImageBackground } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import bgImage from '../assets/mountain.jpg'
+import bgImage from '../assets/mountain.jpg';
+
+const colors = {
+    grey: '#41464D',
+    white: 'white',
+    teal: '#0DD5B2'
+}
 
 export default class Start extends React.Component {
     constructor(props) {
@@ -11,12 +17,6 @@ export default class Start extends React.Component {
             username: '',
             color: ''
         };
-    }
-
-    colors = {
-        grey: '#41464D',
-        white: 'white',
-        teal: '#0DD5B2'
     }
 
     render() {
@@ -42,7 +42,7 @@ export default class Start extends React.Component {
                             accessibilityLabel="choose teal background"
                             accessibilityHint="choose chat screen background"
                             accessibilityRole="button"
-                            onPress={() => this.setState({ color: this.colors.teal })}
+                            onPress={() => this.setState({ color: colors.teal })}
                         >
                             <View style={[styles.colorChoice, styles.color1]}></View>
                         </TouchableOpacity>
@@ -51,7 +51,7 @@ export default class Start extends React.Component {
                             accessibilityLabel="choose gray background"
                             accessibilityHint="choose chat screen background"
                             accessibilityRole="button"
-                            onPress={() => this.setState({ color: this.colors.grey })}
+                            onPress={() => this.setState({ color: colors.grey })}
                         >
                             <View style={[styles.colorChoice, styles.color2]}></View>
                         </TouchableOpacity>
@@ -60,7 +60,7 @@ export default class Start extends React.Component {
                             accessibilityLabel="choose white background"
                             accessibilityHint="choose chat screen background"
                             accessibilityRole="button"
-                            onPress={() => this.setState({ color: this.colors.white })}
+                            onPress={() => this.setState({ color: colors.white })}
                         >
                             <View style={[styles.colorChoice, styles.color3]}></View>
                         </TouchableOpacity>
@@ -123,12 +123,12 @@ const styles = StyleSheet.create({
         margin: 5
     },
     color1: {
-        backgroundColor: '#0DD5B2'
+        backgroundColor: colors.teal
     },
     color2: {
-        backgroundColor: '#41464D'
+        backgroundColor: colors.grey
     },
     color3: {
-        backgroundColor: 'white'
+        backgroundColor: colors.white
     },
 });
