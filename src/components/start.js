@@ -4,6 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import bgImage from '../assets/mountain.jpg';
 
+//initializes colors for chat background choices
 const colors = {
     grey: '#41464D',
     white: 'white',
@@ -27,7 +28,6 @@ export default class Start extends React.Component {
                 style={styles.bgImage}
             >
                 <View style={styles.container}>
-
                     <Text style={styles.nameHeader}>What is Your Name?</Text>
                     <TextInput
                         style={styles.nameInput}
