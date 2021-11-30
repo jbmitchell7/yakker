@@ -6,7 +6,6 @@ import bgImage from '../assets/mountain.jpg';
 
 //initializes colors for chat background choices
 const colors = {
-    grey: '#363732',
     tan: '#FECB7A',
     teal: '#0DD5B2',
     brown: '#B5742A',
@@ -46,16 +45,7 @@ export default class Start extends React.Component {
                             accessibilityRole="button"
                             onPress={() => this.setState({ color: colors.teal })}
                         >
-                            <View style={[styles.colorChoice, styles.color1]}></View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            accessible={true}
-                            accessibilityLabel="choose gray background"
-                            accessibilityHint="choose chat screen background"
-                            accessibilityRole="button"
-                            onPress={() => this.setState({ color: colors.grey })}
-                        >
-                            <View style={[styles.colorChoice, styles.color2]}></View>
+                            <View style={[styles.colorChoice, styles.colorTeal]}></View>
                         </TouchableOpacity>
                         <TouchableOpacity
                             accessible={true}
@@ -64,7 +54,7 @@ export default class Start extends React.Component {
                             accessibilityRole="button"
                             onPress={() => this.setState({ color: colors.tan })}
                         >
-                            <View style={[styles.colorChoice, styles.color3]}></View>
+                            <View style={[styles.colorChoice, styles.colorTan]}></View>
                         </TouchableOpacity>
                         <TouchableOpacity
                             accessible={true}
@@ -73,7 +63,7 @@ export default class Start extends React.Component {
                             accessibilityRole="button"
                             onPress={() => this.setState({ color: colors.brown })}
                         >
-                            <View style={[styles.colorChoice, styles.color4]}></View>
+                            <View style={[styles.colorChoice, styles.colorBrown]}></View>
                         </TouchableOpacity>
                         <TouchableOpacity
                             accessible={true}
@@ -82,11 +72,11 @@ export default class Start extends React.Component {
                             accessibilityRole="button"
                             onPress={() => this.setState({ color: colors.blue })}
                         >
-                            <View style={[styles.colorChoice, styles.color5]}></View>
+                            <View style={[styles.colorChoice, styles.colorBlue]}></View>
                         </TouchableOpacity>
                     </View>
                     <Button
-                        style={styles.btn}
+                        color="#363732"
                         title="Go to Chat"
                         onPress={() => {
                             this.props.navigation.navigate('Chat', { username: this.state.username, color: this.state.color })
@@ -127,10 +117,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 15
     },
-    btn: {
-        backgroundColor: '#FECB7A',
-        borderRadius: 5
-    },
     colorChooser: {
         flex: 0.1,
         flexDirection: 'row',
@@ -142,19 +128,16 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         margin: 5
     },
-    color1: {
+    colorTeal: {
         backgroundColor: colors.teal
     },
-    color2: {
-        backgroundColor: colors.grey
-    },
-    color3: {
+    colorTan: {
         backgroundColor: colors.tan
     },
-    color4: {
+    colorBrown: {
         backgroundColor: colors.brown
     },
-    color5: {
+    colorBlue: {
         backgroundColor: colors.blue
     },
 });
