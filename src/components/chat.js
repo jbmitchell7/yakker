@@ -1,39 +1,76 @@
 import React from 'react';
 import { View, Platform, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { GiftedChat, Bubble, SystemMessage, Day } from 'react-native-gifted-chat';
+import firebase from 'firebase';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCe4Dj3FoDfIj_FZmFT1ioPMczcGsVdQ4U",
+    authDomain: "yakker-30e6b.firebaseapp.com",
+    projectId: "yakker-30e6b",
+    storageBucket: "yakker-30e6b.appspot.com",
+    messagingSenderId: "358579917269",
+    appId: "1:358579917269:web:402506dae8bb4ffb56ed5c"
+};
 
 export default class Chat extends React.Component {
     constructor() {
         super();
         this.state = {
             messages: [],
+            uid: null,
         }
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        this.referenceMessages = firebase.firestore().collection('messages');
     }
 
     componentDidMount() {
         //import username from user entry on start screen
-        let { username } = this.props.route.params;
+        const { username } = this.props.route.params;
         this.props.navigation.setOptions({ title: username ? username : "You did not enter a name!" });
-        this.setState({
-            //dummy messages when opening the chat screen
-            messages: [
-                {
-                    _id: 1,
-                    text: 'Hello developer',
-                    createdAt: new Date(),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                },
-                {
-                    _id: 2,
-                    text: `${username} has entered the chat`,
-                    createdAt: new Date(),
-                    system: true,
-                },
-            ],
+        //authentication
+        this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+            if (!user) {
+                firebase.auth().signInAnonymously();
+            }
+            this.setState({
+                uid: user.uid,
+                messages: [],
+            });
+            //gets messages from db and subscribes to updates
+            this.unsubscribe = this.referenceMessages
+                .orderBy("createdAt", "desc")
+                .onSnapshot(this.onCollectionUpdate);
+        });
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe();
+        this.authUnsubscribe();
+    }
+
+    onCollectionUpdate = (querySnapshot) => {
+        const messages = [];
+        querySnapshot.forEach((doc) => {
+            let data = doc.data();
+            messages.push({
+                _id: data._id,
+                text: data.text,
+                createdAt: data.createdAt.toDate(),
+                user: data.user,
+            });
+        });
+        this.setState({ messages });
+    };
+
+    addMessages() {
+        const newMessage = this.state.messages[0];
+        this.referenceMessages.add({
+            _id: newMessage._id,
+            text: newMessage.text,
+            createdAt: newMessage.createdAt,
+            user: newMessage.user,
         })
     }
 
@@ -41,21 +78,16 @@ export default class Chat extends React.Component {
     onSend(messages = []) {
         this.setState(previousState => ({
             messages: GiftedChat.append(previousState.messages, messages),
-        }))
+        }),
+            () => {
+                this.addMessages();
+            });
+
     }
 
     //changes chat bubble color
     renderBubble(props) {
-        return (
-            <Bubble
-                {...props}
-                wrapperStyle={{
-                    right: {
-                        backgroundColor: '#363732'
-                    }
-                }}
-            />
-        )
+        return <Bubble {...props} wrapperStyle={{ right: { backgroundColor: '#363732' } }} />
     }
 
     //customizes system message style when entering the chat
