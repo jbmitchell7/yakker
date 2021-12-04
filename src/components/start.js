@@ -37,6 +37,7 @@ export default class Start extends React.Component {
                         placeholder='Enter Name Here'
                     />
                     <Text style={styles.bgHeader}>Choose a Chat Background Color</Text>
+                    {/* adds color switch buttons to the view */}
                     <View style={styles.colorChooser}>
                         <TouchableOpacity
                             accessible={true}

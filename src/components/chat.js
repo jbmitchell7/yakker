@@ -22,6 +22,7 @@ export default class Chat extends React.Component {
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
+        //points to location of the messages collection in firebase
         this.referenceMessages = firebase.firestore().collection('messages');
     }
 
@@ -50,6 +51,7 @@ export default class Chat extends React.Component {
         this.authUnsubscribe();
     }
 
+    //gets changes to messages collection
     onCollectionUpdate = (querySnapshot) => {
         const messages = [];
         querySnapshot.forEach((doc) => {
@@ -64,6 +66,7 @@ export default class Chat extends React.Component {
         this.setState({ messages });
     };
 
+    //adds new message to collection
     addMessages() {
         const newMessage = this.state.messages[0];
         this.referenceMessages.add({
@@ -74,7 +77,7 @@ export default class Chat extends React.Component {
         })
     }
 
-    //appends messages to the state on send
+    //appends messages to the state on send and calls addMessages()
     onSend(messages = []) {
         this.setState(previousState => ({
             messages: GiftedChat.append(previousState.messages, messages),
@@ -95,6 +98,7 @@ export default class Chat extends React.Component {
         return <SystemMessage {...props} textStyle={{ color: 'black', }} />
     }
 
+    //changes date color of chat info
     renderDay(props) {
         return <Day {...props} textStyle={{ color: 'black' }} />
     }
