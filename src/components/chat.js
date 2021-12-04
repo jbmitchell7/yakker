@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Platform, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { GiftedChat, Bubble, SystemMessage, Day } from 'react-native-gifted-chat';
 import firebase from 'firebase';
+import 'firebase/firestore';
 
 const firebaseConfig = {
     apiKey: "AIzaSyCe4Dj3FoDfIj_FZmFT1ioPMczcGsVdQ4U",
@@ -31,7 +32,7 @@ export default class Chat extends React.Component {
         const { username } = this.props.route.params;
         this.props.navigation.setOptions({ title: username ? username : "You did not enter a name!" });
         //authentication
-        this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+        this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
             if (!user) {
                 firebase.auth().signInAnonymously();
             }
