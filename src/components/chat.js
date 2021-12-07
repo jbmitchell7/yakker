@@ -21,6 +21,7 @@ export default class Chat extends React.Component {
         this.state = {
             messages: [],
             uid: null,
+            isConnected: false,
         }
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
@@ -45,6 +46,7 @@ export default class Chat extends React.Component {
                     this.setState({
                         uid: user.uid,
                         messages: [],
+                        isConnected: true,
                     });
                     //gets messages from db and subscribes to updates
                     this.unsubscribe = this.referenceMessages
@@ -82,6 +84,18 @@ export default class Chat extends React.Component {
             this.saveMessages();
         });
     };
+
+    //appends messages to the state on send and calls addMessages() to add to firestore
+    onSend(messages = []) {
+        this.setState(previousState => ({
+            messages: GiftedChat.append(previousState.messages, messages),
+        }),
+            () => {
+                this.addMessages();
+                this.saveMessages();
+            });
+
+    }
 
     //adds new message to collection
     addMessages() {
@@ -128,18 +142,6 @@ export default class Chat extends React.Component {
         }
     }
 
-    //appends messages to the state on send and calls addMessages()
-    onSend(messages = []) {
-        this.setState(previousState => ({
-            messages: GiftedChat.append(previousState.messages, messages),
-        }),
-            () => {
-                this.addMessages();
-                this.saveMessages();
-            });
-
-    }
-
     //changes chat bubble color
     renderBubble(props) {
         return <Bubble {...props} wrapperStyle={{ right: { backgroundColor: '#363732' } }} />
@@ -159,11 +161,7 @@ export default class Chat extends React.Component {
     renderInputToolbar(props) {
         if (this.state.isConnected == false) {
         } else {
-            return (
-                <InputToolbar
-                    {...props}
-                />
-            );
+            return <InputToolbar {...props} />;
         }
     }
 
