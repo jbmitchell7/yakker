@@ -5,6 +5,9 @@ import firebase from 'firebase';
 import 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import { MapView } from 'expo';
+
+import CustomActions from './customactions';
 
 const firebaseConfig = {
     apiKey: "AIzaSyCe4Dj3FoDfIj_FZmFT1ioPMczcGsVdQ4U",
@@ -22,6 +25,7 @@ export default class Chat extends React.Component {
             messages: [],
             uid: null,
             isConnected: false,
+            image: null,
         }
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
@@ -86,7 +90,7 @@ export default class Chat extends React.Component {
     };
 
     //appends messages to the state on send and calls addMessages() to add to firestore
-    onSend(messages = []) {
+    onSend = (messages = []) => {
         this.setState(previousState => ({
             messages: GiftedChat.append(previousState.messages, messages),
         }),
@@ -98,7 +102,7 @@ export default class Chat extends React.Component {
     }
 
     //adds new message to collection
-    addMessages() {
+    addMessages = () => {
         const newMessage = this.state.messages[0];
         this.referenceMessages.add({
             _id: newMessage._id,
@@ -109,7 +113,7 @@ export default class Chat extends React.Component {
     }
 
     //gets messages from local storage
-    async getMessages() {
+    getMessages = async () => {
         let messages = '';
         try {
             messages = await AsyncStorage.getItem('messages') || [];
@@ -122,7 +126,7 @@ export default class Chat extends React.Component {
     }
 
     //saves messages to local storage
-    async saveMessages() {
+    saveMessages = async () => {
         try {
             await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
         } catch (e) {
@@ -131,7 +135,7 @@ export default class Chat extends React.Component {
     }
 
     //deletes messages from local storage
-    async deleteMessages() {
+    deleteMessages = async () => {
         try {
             await AsyncStorage.removeItem('messages');
             this.setState({
@@ -143,26 +147,54 @@ export default class Chat extends React.Component {
     }
 
     //changes chat bubble color
-    renderBubble(props) {
+    renderBubble = (props) => {
         return <Bubble {...props} wrapperStyle={{ right: { backgroundColor: '#363732' } }} />
     }
 
     //customizes system message style when entering the chat
-    renderSystemMessage(props) {
+    renderSystemMessage = (props) => {
         return <SystemMessage {...props} textStyle={{ color: 'black', }} />
     }
 
     //changes date color of chat info
-    renderDay(props) {
+    renderDay = (props) => {
         return <Day {...props} textStyle={{ color: 'black' }} />
     }
 
     //renders input toolbar is user is online
-    renderInputToolbar(props) {
+    renderInputToolbar = (props) => {
         if (this.state.isConnected == false) {
         } else {
             return <InputToolbar {...props} />;
         }
+    }
+
+    //renders the + button to add image or location from CustomActions
+    renderCustomActions = (props) => {
+        return <CustomActions {...props} />
+    };
+
+    renderCustomView = (props) => {
+        const { currentMessage } = props;
+        if (currentMessage.location) {
+            return (
+                <MapView
+                    style={{
+                        width: 150,
+                        height: 100,
+                        borderRadius: 13,
+                        margin: 3
+                    }}
+                    region={{
+                        latitude: currentMessage.location.latitude,
+                        longitude: currentMessage.location.longitude,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    }}
+                />
+            );
+        }
+        return null;
     }
 
     render() {
@@ -171,10 +203,11 @@ export default class Chat extends React.Component {
             //sets background color to pink if none is chosen
             <View style={{ flex: 1, backgroundColor: color ? color : '#C373CB' }}>
                 <GiftedChat
-                    renderInputToolbar={this.renderInputToolbar.bind(this)}
-                    renderSystemMessage={this.renderSystemMessage.bind(this)}
-                    renderDay={this.renderDay.bind(this)}
-                    renderBubble={this.renderBubble.bind(this)}
+                    renderActions={this.renderCustomActions}
+                    renderInputToolbar={this.renderInputToolbar}
+                    renderSystemMessage={this.renderSystemMessage}
+                    renderDay={this.renderDay}
+                    renderBubble={this.renderBubble}
                     messages={this.state.messages}
                     onSend={messages => this.onSend(messages)}
                     user={{
