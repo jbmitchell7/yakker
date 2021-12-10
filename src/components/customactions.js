@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import * as Camera from 'expo-camera';
 import firebase from 'firebase';
 import 'firebase/firestore';
 
@@ -11,7 +11,7 @@ export default class CustomActions extends React.Component {
 
     //function to let user pick image from device library
     imagePicker = async () => {
-        const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         try {
             if (status === "granted") {
                 const result = await ImagePicker.launchImageLibraryAsync({
@@ -29,10 +29,7 @@ export default class CustomActions extends React.Component {
 
     //function to send photo just taken by user
     takePhoto = async () => {
-        const { status } = await Permissions.askAsync(
-            Permissions.CAMERA,
-            Permissions.MEDIA_LIBRARY
-        );
+        const { status } = await Camera.requestCameraPermissionsAsync();
         try {
             if (status === "granted") {
                 const result = await ImagePicker.launchCameraAsync({
@@ -79,8 +76,8 @@ export default class CustomActions extends React.Component {
 
     //gets and sends user location
     getLocation = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
         try {
-            const { status } = await Permissions.askAsync(Permissions.LOCATION);
             if (status === "granted") {
                 const result = await Location.getCurrentPositionAsync(
                     {}
@@ -103,7 +100,7 @@ export default class CustomActions extends React.Component {
 
     //handles press of + action button on chat keyboard
     onActionPress = () => {
-        const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
+        const options = ["Choose From Library","Take Picture","Send Location","Cancel"];
         const cancelButtonIndex = options.length - 1;
         this.context.actionSheet().showActionSheetWithOptions(
             {
@@ -113,16 +110,16 @@ export default class CustomActions extends React.Component {
             async (buttonIndex) => {
                 switch (buttonIndex) {
                     case 0:
-                        console.log('user wants to pick an image');
-                        return;
+                        console.log("user wants to pick an image");
+                        return this.imagePicker();
                     case 1:
-                        console.log('user wants to take a photo');
-                        return;
+                        console.log("user wants to take a photo");
+                        return this.takePhoto();
                     case 2:
-                        console.log('user wants to get their location');
-                    default:
+                        console.log("user wants to get their location");
+                        return this.getLocation();
                 }
-            },
+            }
         );
     };
 

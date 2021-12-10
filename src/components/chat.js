@@ -82,6 +82,8 @@ export default class Chat extends React.Component {
                 text: data.text,
                 createdAt: data.createdAt.toDate(),
                 user: data.user,
+                image: data.image || null,
+                location: data.location || null
             });
         });
         this.setState({ messages }, () => {
@@ -109,6 +111,8 @@ export default class Chat extends React.Component {
             text: newMessage.text,
             createdAt: newMessage.createdAt,
             user: newMessage.user,
+            image: newMessage.image || null,
+            location: newMessage.location || null
         })
     }
 
@@ -170,22 +174,15 @@ export default class Chat extends React.Component {
     }
 
     //renders the + button to add image or location from CustomActions
-    renderCustomActions = (props) => {
-        return <CustomActions {...props} />
-    };
+    renderCustomActions = (props) => <CustomActions {...props} />;
 
     //renders custom view of user shared location
-    renderCustomView = (props) => {
+    renderCustomView(props) {
         const { currentMessage } = props;
         if (currentMessage.location) {
             return (
                 <MapView
-                    style={{
-                        width: 150,
-                        height: 100,
-                        borderRadius: 13,
-                        margin: 3
-                    }}
+                    style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
                     region={{
                         latitude: currentMessage.location.latitude,
                         longitude: currentMessage.location.longitude,
