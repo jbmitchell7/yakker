@@ -4,28 +4,34 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import firebase from 'firebase';
+import 'firebase/firestore';
 
 export default class CustomActions extends React.Component {
 
-    pickImage = async () => {
+    //function to let user pick image from device library
+    imagePicker = async () => {
         const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-        if (status === 'granted') {
-            let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: 'Images',
-            }).catch(error => console.log(error));
-
-            if (!result.cancelled) {
-                this.setState({
-                    image: result
-                });
+        try {
+            if (status === "granted") {
+                const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                }).catch((error) => console.log(error));
+                if (!result.cancelled) {
+                    const imageUrl = await this.uploadImageFetch(result.uri);
+                    this.props.onSend({ image: imageUrl });
+                }
             }
+        } catch (error) {
+            console.log(error.message);
         }
-    }
+    };
 
+    //function to send photo just taken by user
     takePhoto = async () => {
         const { status } = await Permissions.askAsync(
             Permissions.CAMERA,
-            Permissions.CAMERA_ROLL
+            Permissions.MEDIA_LIBRARY
         );
         try {
             if (status === "granted") {
@@ -43,19 +49,59 @@ export default class CustomActions extends React.Component {
         }
     };
 
+    //uploads image to firestore
+    uploadImageFetch = async (uri) => {
+        const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                resolve(xhr.response);
+            };
+            xhr.onerror = function (e) {
+                console.log(e);
+                reject(new TypeError("Network request failed"));
+            };
+            xhr.responseType = "blob";
+            xhr.open("GET", uri, true);
+            xhr.send(null);
+        });
+
+        const imageNameBefore = uri.split("/");
+        const imageName = imageNameBefore[imageNameBefore.length - 1];
+
+        const ref = firebase.storage().ref().child(`images/${imageName}`);
+
+        const snapshot = await ref.put(blob);
+
+        blob.close();
+
+        return await snapshot.ref.getDownloadURL();
+    };
+
+    //gets and sends user location
     getLocation = async () => {
-        const { status } = await Permissions.askAsync(Permissions.LOCATION);
-        if (status === 'granted') {
-            let result = await Location.getCurrentPositionAsync({});
-
-            if (result) {
-                this.setState({
-                    location: result
-                });
+        try {
+            const { status } = await Permissions.askAsync(Permissions.LOCATION);
+            if (status === "granted") {
+                const result = await Location.getCurrentPositionAsync(
+                    {}
+                ).catch((error) => console.log(error));
+                const longitude = JSON.stringify(result.coords.longitude);
+                const latitude = JSON.stringify(result.coords.latitude);
+                if (result) {
+                    this.props.onSend({
+                        location: {
+                            longitude: longitude,
+                            latitude: latitude,
+                        },
+                    });
+                }
             }
+        } catch (error) {
+            console.log(error.message);
         }
-    }
+    };
 
+    //handles press of + action button on chat keyboard
     onActionPress = () => {
         const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
         const cancelButtonIndex = options.length - 1;
@@ -82,7 +128,13 @@ export default class CustomActions extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity style={[styles.container]} onPress={this.onActionPress}>
+            <TouchableOpacity
+                accessible={true}
+                accessibilityLabel={"More Actions"}
+                accessibilityHint={"Lets you choose to send an image or geolocation"}
+                style={[styles.container]}
+                onPress={this.onActionPress}
+            >
                 <View style={[styles.wrapper, this.props.wrapperStyle]}>
                     <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
                 </View>
