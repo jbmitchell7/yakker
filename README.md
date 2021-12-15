@@ -2,7 +2,7 @@
 This is a react-native chat application built using the GiftedChat library. Users can join a chatroom to send and receive messages, images, and share their location with others in the chat.
 
 ## Prerequisites
-Nodejs and npm
+Nodejs and npm\
 expo-cli - installed by executing `npm install -g expo-cli`
 
 ## Installation Instructions
