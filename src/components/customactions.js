@@ -13,15 +13,22 @@ export default class CustomActions extends React.Component {
     imagePicker = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         try {
-            if (status === "granted") {
-                const result = await ImagePicker.launchImageLibraryAsync({
-                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                }).catch((error) => console.log(error));
-                if (!result.cancelled) {
-                    const imageUrl = await this.uploadImageFetch(result.uri);
-                    this.props.onSend({ image: imageUrl });
-                }
+            //if no media library permissions
+            if (status !== "granted") {
+                return
             }
+            //with media library permissions
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            }).catch((error) => console.log(error));
+            //if operation is cancelled, do nothing
+            if (result.cancelled) {
+                console.log('cancelled by user');
+                return
+            }
+            //upload image if all conditions pass
+            const imageUrl = await this.uploadImageFetch(result.uri);
+            this.props.onSend({ image: imageUrl });
         } catch (error) {
             console.log(error.message);
         }
@@ -31,16 +38,21 @@ export default class CustomActions extends React.Component {
     takePhoto = async () => {
         const { status } = await Camera.requestCameraPermissionsAsync();
         try {
-            if (status === "granted") {
-                const result = await ImagePicker.launchCameraAsync({
-                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                }).catch((error) => console.log(error));
-
-                if (!result.cancelled) {
-                    const imageUrl = await this.uploadImageFetch(result.uri);
-                    this.props.onSend({ image: imageUrl });
-                }
+            //if no camera permissions
+            if (status !== "granted") {
+                return
             }
+            //with camera permissions
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            }).catch((error) => console.log(error));
+            //if operation is cancelled, do nothing
+            if (result.cancelled) {
+                return
+            }
+            //upload image if all conditions pass
+            const imageUrl = await this.uploadImageFetch(result.uri);
+            this.props.onSend({ image: imageUrl });
         } catch (error) {
             console.log(error.message);
         }
@@ -78,18 +90,22 @@ export default class CustomActions extends React.Component {
     getLocation = async () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
         try {
-            if (status === "granted") {
-                const result = await Location.getCurrentPositionAsync({}).catch(
-                    (error) => console.log(error));
-                if (result) {
-                    this.props.onSend({
-                        location: {
-                            longitude: result.coords.longitude,
-                            latitude: result.coords.latitude,
-                        },
-                    });
-                }
+            if (status !== "granted") {
+                console.log('user permission not granted');
+                return
             }
+            const result = await Location.getCurrentPositionAsync({}).catch(
+                (error) => console.log(error));
+            if (!result) {
+                console.log('couldnt get user location');
+                return
+            }
+            this.props.onSend({
+                location: {
+                    longitude: result.coords.longitude,
+                    latitude: result.coords.latitude,
+                },
+            });
         } catch (error) {
             console.log(error.message);
         }
@@ -97,14 +113,14 @@ export default class CustomActions extends React.Component {
 
     //handles press of + action button on chat keyboard
     onActionPress = () => {
-        const options = ["Choose From Library","Take Picture","Send Location","Cancel"];
+        const options = ["Choose From Library", "Take Picture", "Send Location", "Cancel"];
         const cancelButtonIndex = options.length - 1;
         this.context.actionSheet().showActionSheetWithOptions(
             {
                 options,
                 cancelButtonIndex,
             },
-            async (buttonIndex) => {
+            (buttonIndex) => {
                 switch (buttonIndex) {
                     case 0:
                         console.log("user wants to pick an image");

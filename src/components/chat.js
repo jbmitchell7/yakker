@@ -167,8 +167,7 @@ export default class Chat extends React.Component {
 
     //renders input toolbar is user is online
     renderInputToolbar = (props) => {
-        if (this.state.isConnected == false) {
-        } else {
+        if (this.state.isConnected) {
             return <InputToolbar {...props} />;
         }
     }
@@ -179,25 +178,24 @@ export default class Chat extends React.Component {
     //renders custom view of user shared location
     renderCustomView(props) {
         const { currentMessage } = props;
-        if (currentMessage.location) {
-            console.log("has location");
-            return (
-                <MapView
-                    style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
-                    region={{
-                        latitude: currentMessage.location.latitude,
-                        longitude: currentMessage.location.longitude,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
-                />
-            );
+        if (!currentMessage.location) {
+            return null;
         }
-        return null;
+        return (
+            <MapView
+                style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+                region={{
+                    latitude: currentMessage.location.latitude,
+                    longitude: currentMessage.location.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                }}
+            />
+        );
     }
 
     render() {
-        let { color } = this.props.route.params;
+        const { color } = this.props.route.params;
         return (
             //sets background color to pink if none is chosen
             <View style={{ flex: 1, backgroundColor: color ? color : '#C373CB' }}>
